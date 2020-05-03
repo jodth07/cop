@@ -1,9 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" name="Olson_Dimanche_92146064_hw1:jar">
-    <output-path>$PROJECT_DIR$/out/artifacts/Olson_Dimanche_92146064_hw1_jar</output-path>
-    <root id="archive" name="cop5556sp17.jar">
-      <element id="module-output" name="cop5556sp17" />
-      <element id="extracted-dir" path="/Applications/junit-4.12.jar" path-in-jar="/" />
-    </root>
-  </artifact>
-</component>
