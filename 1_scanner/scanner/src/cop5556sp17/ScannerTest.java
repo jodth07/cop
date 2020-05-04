@@ -30,13 +30,13 @@ public class ScannerTest {
         scanner.scan();
     }
 
-    @AfterEach
-    public void testFinalEOF() throws IllegalCharException, IllegalNumberException {
-        //check that the scanner has inserted an EOF token at the end
-        token = scanner.nextToken();
-        assertEquals(Scanner.Kind.EOF, token.kind);
-        assertEquals(token.text, "eof");
-    }
+//    @AfterEach
+//    public void testFinalEOF() throws IllegalCharException, IllegalNumberException {
+//        //check that the scanner has inserted an EOF token at the end
+//        token = scanner.nextToken();
+//        assertEquals(Scanner.Kind.EOF, token.kind);
+//        assertEquals(token.text, "eof");
+//    }
 
     @Test
     public void testInComment() throws IllegalCharException, IllegalNumberException {
@@ -49,7 +49,7 @@ public class ScannerTest {
         token = scanner.nextToken();
         assertEquals(Scanner.Kind.UNCOMMENT, token.kind);
         assertEquals(token.text, "*/");
-        assertEquals(0, token.pos);
+        assertEquals(0, token.posInLine);
         assertFalse(scanner.inComment);
     }
 
@@ -62,12 +62,13 @@ public class ScannerTest {
         token = scanner.nextToken();
         assertEquals(Scanner.Kind.COMMENT, token.kind);
         assertEquals(token.text, "/*");
+        assertEquals(0, token.posInLine);
 
         //check that the scanner has inserted an EOF token at the end
-        Scanner.Token token2 = scanner.nextToken();
-        assertEquals(Scanner.Kind.UNCOMMENT, token2.kind);
-        assertEquals(token2.text, "*/");
-        assertEquals(5, token2.pos);
+        token = scanner.nextToken();
+        assertEquals(Scanner.Kind.UNCOMMENT, token.kind);
+        assertEquals(token.text, "*/");
+        assertEquals(5, token.posInLine);
         assertFalse(scanner.inComment);
     }
 
@@ -536,6 +537,58 @@ public class ScannerTest {
         assertEquals(text.length(), token.length);
         assertEquals(KW_SCREENWIDTH, token.kind);
     }
+
+    //    NOT("!"), NOTEQUAL("!="), LT("<"), GT(">"),
+    @Test
+    public void testNotEqualNot() throws IllegalCharException, IllegalNumberException {
+        input = "! != ";
+
+        scanner = new Scanner(input);
+        scanner.scan();
+
+        token = scanner.nextToken();
+        text = NOT.getText();
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(NOT, token.kind);
+        assertEquals(0, token.posInLine);
+        assertEquals(0, token.line);
+
+        token = scanner.nextToken();
+        text = NOTEQUAL.getText();
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(NOTEQUAL, token.kind);
+        assertEquals(2, token.posInLine);
+
+    }
+
+
+    //   LT("<"), GT(">"),
+    @Test
+    public void testLessthanGreaterthan() throws IllegalCharException, IllegalNumberException {
+        input = "< ";
+        scanner = new Scanner(input);
+        scanner.scan();
+
+        token = scanner.nextToken();
+        text = LT.getText();
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(LT, token.kind);
+        assertEquals(0, token.posInLine);
+        assertEquals(0, token.line);
+
+//        token = scanner.nextToken();
+//        text = NOTEQUAL.getText();
+//        assertEquals(text, token.getText());
+//        assertEquals(text.length(), token.length);
+//        assertEquals(NOTEQUAL, token.kind);
+//        assertEquals(2, token.posInLine);
+
+    }
+
+
 
     //	@Test
 //	public void testIntOverflowError() throws IllegalCharException, IllegalNumberException{

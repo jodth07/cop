@@ -18,13 +18,15 @@ public class Scanner {
         KW_IF("if"), KW_WHILE("while"),
 
         SEMI(";"), COMMA(","), LPAREN("("), RPAREN(")"), LBRACE("{"),
-        RBRACE("}"), OR("|"), AND("&"), TIMES("*"), DIV("/"), MOD("%"), PLUS("+"),
+        RBRACE("}"),
+        AND("&"), TIMES("*"), DIV("/"), MOD("%"), PLUS("+"),
 
-        MINUS("-"), NOT("!"), LT("<"), GT(">"),
 
-        ARROW("->"), BARARROW("|->"),
-        EQUAL("=="), NOTEQUAL("!="),  LE("<="), GE(">="),
-        ASSIGN("<-"),
+        NOT("!"), NOTEQUAL("!="), LT("<"), GT(">"),
+
+        OR("|"), MINUS("-"), ARROW("->"), BARARROW("|->"), ASSIGN("<-"),
+        EQUAL("=="),   LE("<="), GE(">="),
+
 
         OP_BLUR("blur"), OP_GRAY("gray"), OP_CONVOLVE("convolve"), OP_WIDTH("width"),
         OP_HEIGHT("height"), EOF("eof"), COMMENT("*/"), UNCOMMENT("/*");
@@ -42,42 +44,23 @@ public class Scanner {
 
         public static Kind getKind(String text){
             switch (text){
-                case ";" : return SEMI;
-                case "," : return COMMA;
-                case "(" : return LPAREN;
-                case ")" : return RPAREN;
-                case "{" : return LBRACE;
-                case "}" : return RBRACE;
-                case "|" : return OR;
-                case "&" : return AND;
-                case "*" : return TIMES;
-                case "/" : return DIV;
-                case "%" : return MOD;
-                case "+" : return PLUS;
-
-                default: return null;
-            }
-        }
-
-        public static Kind getKeywordKind(String text){
-            switch (text) {
                 case "false" : return KW_FALSE;
                 case "true" : return KW_TRUE;
-                //frame_op_keyword ∷= xloc | yloc | hide | show | move
+                // frame_op_keyword ∷= xloc | yloc | hide | show | move
                 case "xloc" : return KW_XLOC;
                 case "yloc" : return KW_YLOC;
                 case "hide" : return KW_HIDE;
                 case "show" : return KW_SHOW;
                 case "move" : return KW_MOVE;
-                //image_op_keyword ∷= width | height
+                // image_op_keyword ∷= width | height
                 case "width" : return OP_WIDTH;
                 case "height" : return OP_HEIGHT;
-                //filter_op_keyword ∷= gray | convolve | blur | scale
+                // filter_op_keyword ∷= gray | convolve | blur | scale
                 case "gray" : return OP_GRAY;
                 case "convolve" : return OP_CONVOLVE;
                 case "blur" : return OP_BLUR;
                 case "scale" : return KW_SCALE;
-                //	keyword ::= integer | boolean | image | url | file | frame | while | if | sleep | screenheight | screenwidth
+                // keyword ::= integer | boolean | image | url | file | frame | while | if | sleep | screenheight | screenwidth
                 case "integer" : return KW_INTEGER;
                 case "boolean" : return KW_BOOLEAN;
                 case "image" : return KW_IMAGE;
@@ -89,10 +72,24 @@ public class Scanner {
                 case "sleep" : return OP_SLEEP;
                 case "screenheight" : return KW_SCREENHEIGHT;
                 case "screenwidth" : return KW_SCREENWIDTH;
+                // separator ::=  ;  | ,  |  (  |  )  | { | }
+                case ";" : return SEMI;
+                case "," : return COMMA;
+                case "(" : return LPAREN;
+                case ")" : return RPAREN;
+                case "{" : return LBRACE;
+                case "}" : return RBRACE;
+                // operator ::=	|  | &  |  ==  | !=  | < |  > | <= | >= | +  |  -  |  *   |  /   |  % | !  | -> |  |-> | <-
+                case "|" : return OR;
+                case "&" : return AND;
+                case "*" : return TIMES;
+                case "/" : return DIV;
+                case "%" : return MOD;
+                case "+" : return PLUS;
+                case "!" : return NOT;
+                case "!=" : return NOTEQUAL;
 
-
-                default:
-                    return null;
+                default: return null;
             }
         }
 
@@ -228,31 +225,45 @@ public class Scanner {
             } else if (pos + 1 < charsLength){
                 nextChar = charsArray[pos + 1];
 
-                if ((curChar == '/') || (curChar == '*')) {
+                if (curChar == '!'){
+                    if (nextChar != '='){
+                        text += curChar;
+                        tokens.add(new Token(Kind.getKind(text), pos, text.length(), line, posInLine, text));
+                        text = "";
+                    } else if (nextChar == '=') {
+                        text += curChar;
+                        text += nextChar;
+                        posInLine += 1;
+                        tokens.add(new Token(Kind.getKind(text), pos, text.length(), line, posInLine, text));
+                        pos += 1;
+                        text = "";
+                    }
+                    posInLine += 1;
+                } else if ((curChar == '/') || (curChar == '*')) {
                     // check for comments
                     if ((curChar == '/') && (nextChar == '*')) {
                         text = "/*";
-                        tokens.add(new Token(Kind.COMMENT, pos, 0, line, posInLine, text));
+                        posInLine += 1;
+                        tokens.add(new Token(Kind.COMMENT, pos, text.length(), line, posInLine, text));
                         inComment = true;
                         pos += 1;
-                        posInLine += 1;
                         text = "";
                     } else if ((curChar == '*') && (nextChar == '/') && inComment) {
                         text = "*/";
-                        tokens.add(new Token(Kind.UNCOMMENT, pos, 0, line, posInLine, text));
+                        posInLine += 1;
+                        tokens.add(new Token(Kind.UNCOMMENT, pos, text.length(), line, posInLine, text));
                         inComment = false;
                         pos += 1;
-                        posInLine += 1;
                         text = "";
                     } else {
                         text += curChar;
                         tokens.add(new Token(Kind.getKind(text), pos, text.length(), line, posInLine, text));
                         text = "";
-                        posInLine += 1;
                     }
+                    posInLine += 1;
                 } else if ((Character.isAlphabetic(curChar) && (nextChar == ' '))){
                     text += curChar;
-                    tokens.add(new Token(Kind.getKeywordKind(text), pos, text.length(), line, posInLine, text));
+                    tokens.add(new Token(Kind.getKind(text), pos, text.length(), line, posInLine, text));
                     text = "";
                     pos += 1;
                     posInLine += 2;
@@ -262,7 +273,7 @@ public class Scanner {
                 }
             } else if (Character.isAlphabetic(curChar)){
                 text += curChar;
-                tokens.add(new Token(Kind.getKeywordKind(text), pos, text.length(), line, posInLine, text));
+                tokens.add(new Token(Kind.getKind(text), pos, text.length(), line, posInLine, text));
                 posInLine += 1;
             }
 
@@ -277,7 +288,6 @@ public class Scanner {
         tokens.add(new Token(Kind.EOF, pos, 0, line, posInLine, Kind.EOF.text));
         return this;
     }
-
 
 
     final ArrayList<Token> tokens;
@@ -311,7 +321,6 @@ public class Scanner {
     }
 
 
-
     /**
      * Returns a LinePos object containing the line and position in line of the
      * given token.
@@ -324,5 +333,4 @@ public class Scanner {
     public LinePos getLinePos(Token t) {
         return t.getLinePos();
     }
-
 }
