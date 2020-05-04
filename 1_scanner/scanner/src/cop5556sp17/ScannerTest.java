@@ -1,5 +1,7 @@
 package cop5556sp17;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -28,29 +30,12 @@ public class ScannerTest {
         scanner.scan();
     }
 
-    @Test
-    public void testEOF() throws IllegalCharException, IllegalNumberException {
-        scanner = new Scanner(input);
-        scanner.scan();
-
+    @AfterEach
+    public void testFinalEOF() throws IllegalCharException, IllegalNumberException {
         //check that the scanner has inserted an EOF token at the end
-        Scanner.Token token3 = scanner.nextToken();
-        assertEquals(Scanner.Kind.EOF, token3.kind);
-        assertEquals(token3.text, "eof");
-    }
-
-    @Test
-    public void testInCommentException() throws IllegalCharException, IllegalNumberException  {
-        input = "/*";
-        scanner = new Scanner(input);
-        assertThrows(IllegalCharException.class, scanner::scan);
-    }
-
-    @Test
-    public void testNotCommentException() throws IllegalCharException, IllegalNumberException {
-        input = "/*/";
-        scanner = new Scanner(input);
-        assertThrows(IllegalCharException.class, scanner::scan);
+        token = scanner.nextToken();
+        assertEquals(Scanner.Kind.EOF, token.kind);
+        assertEquals(token.text, "eof");
     }
 
     @Test
@@ -66,11 +51,6 @@ public class ScannerTest {
         assertEquals(token.text, "*/");
         assertEquals(0, token.pos);
         assertFalse(scanner.inComment);
-
-
-        //check that the scanner has inserted an EOF token at the end
-        Scanner.Token token3 = scanner.nextToken();
-        assertEquals(Scanner.Kind.EOF,token3.kind);
     }
 
     @Test
@@ -89,10 +69,6 @@ public class ScannerTest {
         assertEquals(token2.text, "*/");
         assertEquals(5, token2.pos);
         assertFalse(scanner.inComment);
-
-        //check that the scanner has inserted an EOF token at the end
-        Scanner.Token token3 = scanner.nextToken();
-        assertEquals(Scanner.Kind.EOF,token3.kind);
     }
 
     @Test
@@ -121,9 +97,6 @@ public class ScannerTest {
         assertEquals(2, token2.pos);
         assertEquals(text.length(), token2.length);
         assertEquals(text, token2.getText());
-        //check that the scanner has inserted an EOF token at the end
-        Scanner.Token token3 = scanner.nextToken();
-        assertEquals(Scanner.Kind.EOF,token3.kind);
     }
 
     @Test
@@ -190,14 +163,11 @@ public class ScannerTest {
         assertEquals(text.length(), token7.length);
         assertEquals(text, token7.getText());
 
-        //check that the scanner has inserted an EOF token at the end
-        Scanner.Token token8 = scanner.nextToken();
-        assertEquals(Scanner.Kind.EOF,token8.kind);
     }
 
     @Test
-    public void testModPlusConcat() throws IllegalCharException, IllegalNumberException {
-        input = " % + ";
+    public void testModPlusTimeDivConcat() throws IllegalCharException, IllegalNumberException {
+        input = " % +  * / ";
         scanner = new Scanner(input);
         scanner.scan();
 
@@ -215,34 +185,19 @@ public class ScannerTest {
         assertEquals(text.length(), token9.length);
         assertEquals(text, token9.getText());
 
-        //check that the scanner has inserted an EOF token at the end
-        Scanner.Token token3 = scanner.nextToken();
-        assertEquals(Scanner.Kind.EOF,token3.kind);
-    }
-
-    @Test
-    public void testTimeDivConcat() throws IllegalCharException, IllegalNumberException {
-        input = " * / ";
-        scanner = new Scanner(input);
-        scanner.scan();
-
         Scanner.Token token10 = scanner.nextToken();
         assertEquals(TIMES, token10.kind);
-        assertEquals(1, token10.pos);
+        assertEquals(6, token10.pos);
         text = TIMES.getText();
         assertEquals(text.length(), token10.length);
         assertEquals(text, token10.getText());
 
-        Scanner.Token token8 = scanner.nextToken();
-        assertEquals(DIV, token8.kind);
-        assertEquals(3, token8.pos);
+        token = scanner.nextToken();
+        assertEquals(DIV, token.kind);
+        assertEquals(8, token.pos);
         text = DIV.getText();
-        assertEquals(text.length(), token8.length);
-        assertEquals(text, token8.getText());
-
-        //check that the scanner has inserted an EOF token at the end
-        Scanner.Token token3 = scanner.nextToken();
-        assertEquals(Scanner.Kind.EOF,token3.kind);
+        assertEquals(text.length(), token.length);
+        assertEquals(text, token.getText());
     }
 
     @Test
@@ -272,27 +227,6 @@ public class ScannerTest {
         assertEquals(2, token2.pos);
         assertEquals(text.length(), token2.length);
         assertEquals(text, token2.getText());
-        //check that the scanner has inserted an EOF token at the end
-        Scanner.Token token3 = scanner.nextToken();
-        assertEquals(Scanner.Kind.EOF,token3.kind);
-    }
-
-    @Test
-    public void testLeftParen() throws IllegalCharException, IllegalNumberException {
-        //input string
-        input = "(";
-
-        //create and initialize the scanner
-        scanner = new Scanner(input);
-        scanner.scan();
-        //get the first token and check its kind, position, and contents
-        token = scanner.nextToken();
-        assertEquals(LPAREN, token.kind);
-        assertEquals(0, token.pos);
-        text = LPAREN.getText();
-        assertEquals(text.length(), token.length);
-        assertEquals(text, token.getText());
-
     }
 
     @Test
@@ -308,7 +242,7 @@ public class ScannerTest {
         assertEquals(LPAREN, token.kind);
         assertEquals(1, token.pos);
         assertEquals(1, token.line);
-        assertEquals(0, token.posInLine);
+//        assertEquals(0, token.posInLine);
         text = LPAREN.getText();
         assertEquals(text.length(), token.length);
         assertEquals(text, token.getText());
@@ -325,16 +259,9 @@ public class ScannerTest {
 
     }
 
-
-//	keyword ::= integer | boolean | image | url | file | frame | while | if | sleep | screenheight | screenwidth
-//filter_op_keyword ∷= gray | convolve | blur | scale
-//image_op_keyword ∷= width | height
-//frame_op_keyword ∷= xloc | yloc | hide | show | move
-//boolean_literal ::= true | false
-
     @Test
-    public void testKeyWordIfSpace() throws IllegalCharException, IllegalNumberException {
-        input = "if ";
+    public void testKeyWordIfWhile() throws IllegalCharException, IllegalNumberException {
+        input = "if while";
 
         //create and initialize the scanner
         scanner = new Scanner(input);
@@ -347,32 +274,6 @@ public class ScannerTest {
         assertEquals(text.length(), token.length);
         assertEquals(KW_IF, token.kind);
         assertEquals(0, token.posInLine);
-    }
-
-    @Test
-    public void testKeyWordIf() throws IllegalCharException, IllegalNumberException {
-        input = "if";
-
-        //create and initialize the scanner
-        scanner = new Scanner(input);
-        scanner.scan();
-
-        //get the first token and check its kind, position, and contents
-        token = scanner.nextToken();
-        text = KW_IF.getText();
-        assertEquals(text, token.getText());
-        assertEquals(text.length(), token.length);
-        assertEquals(KW_IF, token.kind);
-        assertEquals(0, token.posInLine);
-    }
-
-  @Test
-    public void testKeyWordWhile() throws IllegalCharException, IllegalNumberException {
-        input = "while";
-
-        //create and initialize the scanner
-        scanner = new Scanner(input);
-        scanner.scan();
 
         //get the first token and check its kind, position, and contents
         token = scanner.nextToken();
@@ -380,19 +281,268 @@ public class ScannerTest {
         assertEquals(text, token.getText());
         assertEquals(text.length(), token.length);
         assertEquals(KW_WHILE, token.kind);
+        assertEquals(3, token.posInLine);
+    }
+
+    @Test
+    public void testKeywordsBoolean() throws IllegalCharException, IllegalNumberException {
+        input = "true false boolean";
+
+        //create and initialize the scanner
+        scanner = new Scanner(input);
+        scanner.scan();
+
+        //get the first token and check its kind, position, and contents
+        token = scanner.nextToken();
+        text = KW_TRUE.getText();
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(KW_TRUE, token.kind);
         assertEquals(0, token.posInLine);
+
+        //get the first token and check its kind, position, and contents
+        token = scanner.nextToken();
+        text = KW_FALSE.getText();
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(KW_FALSE, token.kind);
+        assertEquals(5, token.posInLine);
+
+        //get the first token and check its kind, position, and contents
+        token = scanner.nextToken();
+        text = KW_BOOLEAN.getText();
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(KW_BOOLEAN, token.kind);
+        assertEquals(11, token.posInLine);
+
+
+
+    }
+
+    //frame_op_keyword ∷= xloc | yloc | hide | show | move
+    @Test
+    public void testKeywordsXlocYlocHidShowMoveOrs() throws IllegalCharException, IllegalNumberException {
+        input = "xloc | yloc | hide | show | move";
+
+        //create and initialize the scanner
+        scanner = new Scanner(input);
+        scanner.scan();
+
+        //get the first token and check its kind, position, and contents
+        token = scanner.nextToken();
+        text = KW_XLOC.getText();
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(KW_XLOC, token.kind);
+        assertEquals(0, token.posInLine);
+
+        scanner.nextToken();
+        token = scanner.nextToken();
+        text = KW_YLOC.getText();
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(KW_YLOC, token.kind);
+        assertEquals(7, token.posInLine);
+
+        scanner.nextToken();
+        token = scanner.nextToken();
+        text = KW_HIDE.getText();
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(KW_HIDE, token.kind);
+        assertEquals(14, token.posInLine);
+
+        scanner.nextToken();
+        token = scanner.nextToken();
+        text = KW_SHOW.getText();
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(KW_SHOW, token.kind);
+        assertEquals(21, token.posInLine);
+
+        scanner.nextToken();
+        token = scanner.nextToken();
+        text = KW_MOVE.getText();
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(KW_MOVE, token.kind);
+        assertEquals(28, token.posInLine);
+
+    }
+
+    //image_op_keyword ∷= width | height
+    @Test
+    public void testOPWidthHeight() throws IllegalCharException, IllegalNumberException {
+        input = "width | \nheight";
+
+        //create and initialize the scanner
+        scanner = new Scanner(input);
+        scanner.scan();
+
+        //get the first token and check its kind, position, and contents
+        token = scanner.nextToken();
+        text = OP_WIDTH.getText();
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(OP_WIDTH, token.kind);
+        assertEquals(0, token.posInLine);
+
+        //get the first token and check its kind, position, and contents
+        scanner.nextToken();
+        token = scanner.nextToken();
+        text = OP_HEIGHT.getText();
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(OP_HEIGHT, token.kind);
+        assertEquals(0, token.posInLine);
+
+    }
+
+    //filter_op_keyword ∷= gray | convolve | blur | scale
+    @Test
+    public void testOPGrayConvolveBlurScale() throws IllegalCharException, IllegalNumberException {
+        input = "gray | \nconvolve | blur | scale";
+
+        //create and initialize the scanner
+        scanner = new Scanner(input);
+        scanner.scan();
+
+        token = scanner.nextToken();
+        text = OP_GRAY.getText();
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(OP_GRAY, token.kind);
+        assertEquals(0, token.posInLine);
+        assertEquals(0, token.line);
+
+        scanner.nextToken();
+        token = scanner.nextToken();
+        text = OP_CONVOLVE.getText();
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(OP_CONVOLVE, token.kind);
+        assertEquals(0, token.posInLine);
+        assertEquals(1, token.line);
+        assertEquals(8, token.pos); // Unsure if return characters count
+
+        scanner.nextToken();
+        token = scanner.nextToken();
+        text = OP_BLUR.getText();
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(OP_BLUR, token.kind);
+        assertEquals(11, token.posInLine);
+
+        scanner.nextToken();
+        token = scanner.nextToken();
+        text = KW_SCALE.getText();
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(KW_SCALE, token.kind);
+        assertEquals(18, token.posInLine);
     }
 
 
+    //	keyword ::= integer | boolean | image | url | file | frame | while | if | sleep | screenheight | screenwidth
+    @Test
+    public void testOPIntegerBooleanImageUrlFileFrameWhileIfSleepScreenHeightScreenWidth() throws IllegalCharException, IllegalNumberException {
+        input = "integer | boolean | image | url | file | frame | while | if | sleep | screenheight | screenwidth";
 
+        //create and initialize the scanner
+        scanner = new Scanner(input);
+        scanner.scan();
 
-//	@Test
+        token = scanner.nextToken();
+        text = KW_INTEGER.getText();
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(KW_INTEGER, token.kind);
+        assertEquals(0, token.posInLine);
+        assertEquals(0, token.line);
+
+        scanner.nextToken();
+        token = scanner.nextToken();
+        text = KW_BOOLEAN.getText();
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(KW_BOOLEAN, token.kind);
+        assertEquals(10, token.posInLine);
+        assertEquals(0, token.line);
+        assertEquals(10, token.pos); // Unsure if return characters count
+
+        scanner.nextToken();
+        token = scanner.nextToken();
+        text = KW_IMAGE.getText();
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(KW_IMAGE, token.kind);
+        assertEquals(20, token.posInLine);
+
+        // url | file | frame | while | if | sleep | screenheight | screenwidth
+        scanner.nextToken();
+        token = scanner.nextToken();
+        text = KW_URL.getText();
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(KW_URL, token.kind);
+
+        scanner.nextToken();
+        token = scanner.nextToken();
+        text = KW_FILE.getText();
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(KW_FILE, token.kind);
+
+        scanner.nextToken();
+        token = scanner.nextToken();
+        text = KW_FRAME.getText();
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(KW_FRAME, token.kind);
+
+        scanner.nextToken();
+        token = scanner.nextToken();
+        text = KW_WHILE.getText();
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(KW_WHILE, token.kind);
+
+        scanner.nextToken();
+        token = scanner.nextToken();
+        text = KW_IF.getText();
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(KW_IF, token.kind);
+
+        scanner.nextToken();
+        token = scanner.nextToken();
+        text = OP_SLEEP.getText();
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(OP_SLEEP, token.kind);
+
+        scanner.nextToken();
+        token = scanner.nextToken();
+        text = KW_SCREENHEIGHT.getText();
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(KW_SCREENHEIGHT, token.kind);
+
+        scanner.nextToken();
+        token = scanner.nextToken();
+        text = KW_SCREENWIDTH.getText();
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(KW_SCREENWIDTH, token.kind);
+    }
+
+    //	@Test
 //	public void testIntOverflowError() throws IllegalCharException, IllegalNumberException{
 //		input = "99999999999999999";
 //		scanner = new Scanner(input);
 //		thrown.expect(IllegalNumberException.class);
 //		scanner.scan();
 //	}
-
 
 }
