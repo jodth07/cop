@@ -82,12 +82,21 @@ public class Scanner {
                 // operator ::=	|  | &  |  ==  | !=  | < |  > | <= | >= | +  |  -  |  *   |  /   |  % | !  | -> |  |-> | <-
                 case "|" : return OR;
                 case "&" : return AND;
+                case "==" : return EQUAL;
+                case "!=" : return NOTEQUAL;
+                case "<" : return LT;
+                case ">" : return GT;
+                case "<=" : return LE;
+                case ">=" : return GE;
+                case "+" : return PLUS;
+                case "-" : return MINUS;
                 case "*" : return TIMES;
                 case "/" : return DIV;
                 case "%" : return MOD;
-                case "+" : return PLUS;
                 case "!" : return NOT;
-                case "!=" : return NOTEQUAL;
+                case "->" : return ARROW;
+                case "|->" : return BARARROW;
+                case "<-" : return ASSIGN;
 
                 default: return null;
             }
@@ -226,12 +235,11 @@ public class Scanner {
                 nextChar = charsArray[pos + 1];
 
                 if (curChar == '!'){
+                    text += curChar;
                     if (nextChar != '='){
-                        text += curChar;
                         tokens.add(new Token(Kind.getKind(text), pos, text.length(), line, posInLine, text));
                         text = "";
                     } else if (nextChar == '=') {
-                        text += curChar;
                         text += nextChar;
                         posInLine += 1;
                         tokens.add(new Token(Kind.getKind(text), pos, text.length(), line, posInLine, text));
@@ -239,7 +247,20 @@ public class Scanner {
                         text = "";
                     }
                     posInLine += 1;
-                } else if ((curChar == '/') || (curChar == '*')) {
+                } else if ((curChar == '<') || (curChar == '>')) {
+                    text += curChar;
+                    if (nextChar != '='){
+                        tokens.add(new Token(Kind.getKind(text), pos, text.length(), line, posInLine, text));
+                        text = "";
+                    } else if (nextChar == '='){
+                        text += nextChar;
+                        posInLine += 1;
+                        tokens.add(new Token(Kind.getKind(text), pos, text.length(), line, posInLine, text));
+                        pos += 1;
+                        text = "";
+                    }
+                    posInLine += 1;
+                }  else if ((curChar == '/') || (curChar == '*')) {
                     // check for comments
                     if ((curChar == '/') && (nextChar == '*')) {
                         text = "/*";

@@ -567,7 +567,7 @@ public class ScannerTest {
     //   LT("<"), GT(">"),
     @Test
     public void testLessthanGreaterthan() throws IllegalCharException, IllegalNumberException {
-        input = "< ";
+        input = "< > <= >= ";
         scanner = new Scanner(input);
         scanner.scan();
 
@@ -579,13 +579,26 @@ public class ScannerTest {
         assertEquals(0, token.posInLine);
         assertEquals(0, token.line);
 
-//        token = scanner.nextToken();
-//        text = NOTEQUAL.getText();
-//        assertEquals(text, token.getText());
-//        assertEquals(text.length(), token.length);
-//        assertEquals(NOTEQUAL, token.kind);
-//        assertEquals(2, token.posInLine);
+        token = scanner.nextToken();
+        text = GT.getText();
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(GT, token.kind);
+        assertEquals(2, token.posInLine);
 
+        token = scanner.nextToken();
+        text = LE.getText();
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(LE, token.kind);
+        assertEquals(4, token.posInLine);
+
+        token = scanner.nextToken();
+        text = GE.getText();
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(GE, token.kind);
+        assertEquals(7, token.posInLine);
     }
 
 
