@@ -25,4 +25,12 @@ public class ScannerTestExceptions {
         assertThrows(Scanner.IllegalCharException.class, scanner::scan);
     }
 
+
+    @Test
+    public void testIntOverflowError() throws Scanner.IllegalCharException, Scanner.IllegalNumberException {
+        input = "99999999999999999";
+        scanner = new Scanner(input);
+        assertThrows(Scanner.IllegalNumberException.class, scanner::scan);
+    }
+
 }

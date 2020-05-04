@@ -673,12 +673,47 @@ public class ScannerTest {
         assertEquals(9, token.posInLine);
     }
 
-    //	@Test
-//	public void testIntOverflowError() throws IllegalCharException, IllegalNumberException{
-//		input = "99999999999999999";
-//		scanner = new Scanner(input);
-//		thrown.expect(IllegalNumberException.class);
-//		scanner.scan();
-//	}
+    @Test
+    public void testIntLiteral() throws IllegalCharException, IllegalNumberException{
+        input = "9 999";
+        scanner = new Scanner(input);
+        scanner.scan();
 
-}
+        token = scanner.nextToken();
+        text = "9";
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(INT_LIT, token.kind);
+        assertEquals(0, token.posInLine);
+        assertEquals(0, token.line);
+
+        token = scanner.nextToken();
+        text = "999";
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(INT_LIT, token.kind);
+        assertEquals(2, token.posInLine);
+        assertEquals(0, token.line);
+    }
+    @Test
+    public void testIntLiteral() throws IllegalCharException, IllegalNumberException{
+        input = "9 999";
+        scanner = new Scanner(input);
+        scanner.scan();
+
+        token = scanner.nextToken();
+        text = "9";
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(INT_LIT, token.kind);
+        assertEquals(0, token.posInLine);
+        assertEquals(0, token.line);
+
+        token = scanner.nextToken();
+        text = "999";
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(INT_LIT, token.kind);
+        assertEquals(2, token.posInLine);
+        assertEquals(0, token.line);
+    }

@@ -220,11 +220,12 @@ public class Scanner {
                 }
                 posInLine += 1;
             } else if ((curChar == ';') || (curChar == ',') || (curChar == '(') || (curChar == ')') || (curChar == '{')
-                    || (curChar == '}') || (curChar == '&') || (curChar == '+') || (curChar == '%')){
+                    || (curChar == '}') || (curChar == '&') || (curChar == '+') || (curChar == '%')) {
                 text += curChar;
                 tokens.add(new Token(Kind.getKind(text), pos, text.length(), line, posInLine, text));
                 text = "";
                 posInLine += 1;
+
             } else if (pos + 1 < charsLength){
                 nextChar = charsArray[pos + 1];
 
@@ -240,6 +241,23 @@ public class Scanner {
                     }
                     text = "";
                     posInLine += 1;
+                } else if (Character.isDigit(curChar)){
+                    text += curChar;
+                    while ((pos+1 <= charsLength-1) && (Character.isDigit(charsArray[pos+1]))){
+                        System.out.println(pos);
+                        posInLine++;
+                        curChar = charsArray[pos];
+                        text += curChar;
+                        pos++;
+                    }
+                    try {
+                        Integer.parseInt(text);
+                        tokens.add(new Token(Kind.INT_LIT, pos, text.length(), line, posInLine, text));
+                        text = "";
+                    } catch (NumberFormatException e){
+                        throw new IllegalNumberException("number provided is larger than we can work with");
+                    }
+                    posInLine++;
                 }
                 else if (curChar == '|'){
                     text += curChar;
