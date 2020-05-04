@@ -21,16 +21,13 @@ public class Scanner {
         RBRACE("}"),
         AND("&"), TIMES("*"), DIV("/"), MOD("%"), PLUS("+"),
 
-
         NOT("!"), NOTEQUAL("!="), LT("<"), GT(">"),
 
         OR("|"), MINUS("-"), ARROW("->"), BARARROW("|->"), ASSIGN("<-"),
         EQUAL("=="),   LE("<="), GE(">="),
 
-
         OP_BLUR("blur"), OP_GRAY("gray"), OP_CONVOLVE("convolve"), OP_WIDTH("width"),
         OP_HEIGHT("height"), EOF("eof"), COMMENT("*/"), UNCOMMENT("/*");
-
 
         Kind(String text) {
             this.text = text;
@@ -88,7 +85,7 @@ public class Scanner {
                 case ">" : return GT;
                 case "<=" : return LE;
                 case ">=" : return GE;
-                case "+" : return PLUS;
+                case "+" : return PLUS; // TODO TO BE IMPLEMENTED
                 case "-" : return MINUS;
                 case "*" : return TIMES;
                 case "/" : return DIV;
@@ -101,7 +98,6 @@ public class Scanner {
                 default: return null;
             }
         }
-
     }
 
     /**
@@ -124,7 +120,6 @@ public class Scanner {
         }
     }
 
-
     /**
      * Holds the line and position in the line of a token.
      */
@@ -144,7 +139,6 @@ public class Scanner {
         }
     }
 
-
     public static class Token {
         public final Kind kind;
         public final int pos;  //position in input array
@@ -153,7 +147,6 @@ public class Scanner {
         public final int line;  //position in input array
         public final int length;
         public final String text;
-
 
         //returns the text of this Token
         public String getText() {
@@ -186,15 +179,12 @@ public class Scanner {
             //TODO IMPLEMENT THIS
             return 0;
         }
-
     }
-
 
     Scanner(String chars) {
         this.chars = chars;
         tokens = new ArrayList<Token>();
     }
-
 
     public boolean inComment = false;
 
@@ -297,10 +287,7 @@ public class Scanner {
                 tokens.add(new Token(Kind.getKind(text), pos, text.length(), line, posInLine, text));
                 posInLine += 1;
             }
-
         }
-
-
 
         //TODO IMPLEMENT THIS!!!!
         if (inComment){
@@ -309,7 +296,6 @@ public class Scanner {
         tokens.add(new Token(Kind.EOF, pos, 0, line, posInLine, Kind.EOF.text));
         return this;
     }
-
 
     final ArrayList<Token> tokens;
     final String chars;
@@ -340,7 +326,6 @@ public class Scanner {
             return null;
         return tokens.get(tokenNum+1);
     }
-
 
     /**
      * Returns a LinePos object containing the line and position in line of the
