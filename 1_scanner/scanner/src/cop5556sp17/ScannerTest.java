@@ -19,7 +19,7 @@ public class ScannerTest {
     Scanner.Token token;
 
     @BeforeEach
-    public void setUp(){
+    public void setUp() {
         input = "";
         text = "";
     }
@@ -674,7 +674,7 @@ public class ScannerTest {
     }
 
     @Test
-    public void testIntLiteral() throws IllegalCharException, IllegalNumberException{
+    public void testIntLiteral() throws IllegalCharException, IllegalNumberException {
         input = "9 999";
         scanner = new Scanner(input);
         scanner.scan();
@@ -695,9 +695,10 @@ public class ScannerTest {
         assertEquals(2, token.posInLine);
         assertEquals(0, token.line);
     }
+
     @Test
-    public void testIntLiteral() throws IllegalCharException, IllegalNumberException{
-        input = "9 999";
+    public void testIntLiteralAndYloc() throws IllegalCharException, IllegalNumberException {
+        input = "9 999 & yloc";
         scanner = new Scanner(input);
         scanner.scan();
 
@@ -716,4 +717,21 @@ public class ScannerTest {
         assertEquals(INT_LIT, token.kind);
         assertEquals(2, token.posInLine);
         assertEquals(0, token.line);
+
+        token = scanner.nextToken();
+        text = AND.text;
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(AND, token.kind);
+        assertEquals(6, token.posInLine);
+        assertEquals(0, token.line);
+
+        token = scanner.nextToken();
+        text = KW_YLOC.text;
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(KW_YLOC, token.kind);
+        assertEquals(8, token.posInLine);
+        assertEquals(0, token.line);
     }
+}
