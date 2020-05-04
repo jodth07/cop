@@ -214,9 +214,13 @@ public class Scanner {
                 line += 1;
                 posInLine = 0;
             } else if (curChar == ' '){
+                if (text.length() > 0){
+                    tokens.add(new Token(Kind.getKind(text), pos, text.length(), line, posInLine, text));
+                    text = "";
+                }
                 posInLine += 1;
             } else if ((curChar == ';') || (curChar == ',') || (curChar == '(') || (curChar == ')') || (curChar == '{')
-                    || (curChar == '}') || (curChar == '|') || (curChar == '&') || (curChar == '+') || (curChar == '%')){
+                    || (curChar == '}') || (curChar == '&') || (curChar == '+') || (curChar == '%')){
                 text += curChar;
                 tokens.add(new Token(Kind.getKind(text), pos, text.length(), line, posInLine, text));
                 text = "";
@@ -224,42 +228,78 @@ public class Scanner {
             } else if (pos + 1 < charsLength){
                 nextChar = charsArray[pos + 1];
 
-                if (curChar == '!'){
+                if (curChar == '-'){
                     text += curChar;
-                    if (nextChar != '='){
+                    if (nextChar != '>'){
                         tokens.add(new Token(Kind.getKind(text), pos, text.length(), line, posInLine, text));
-                        text = "";
-                    } else if (nextChar == '=') {
+                    } else {
                         text += nextChar;
                         posInLine += 1;
                         tokens.add(new Token(Kind.getKind(text), pos, text.length(), line, posInLine, text));
                         pos += 1;
-                        text = "";
                     }
+                    text = "";
                     posInLine += 1;
-                } else if ((curChar == '<') || (curChar == '>')) {
+                }
+                else if (curChar == '|'){
+                    text += curChar;
+                    if (nextChar != '-'){
+                        tokens.add(new Token(Kind.getKind(text), pos, text.length(), line, posInLine, text));
+                    } else {
+                        if (pos + 2 >= charsLength){
+                            System.out.println(pos);
+                            System.out.println(charsLength);
+                            throw new IllegalCharException("This is an out of index exception");
+                        }
+
+                        text += nextChar;
+                        text += charsArray[pos + 2];
+                        posInLine += 2;
+                        tokens.add(new Token(Kind.getKind(text), pos, text.length(), line, posInLine, text));
+                        pos += 2;
+                    }
+                    text = "";
+                    posInLine += 1;
+                }
+                else if ((curChar == '>') || curChar == '!') {
                     text += curChar;
                     if (nextChar != '='){
                         tokens.add(new Token(Kind.getKind(text), pos, text.length(), line, posInLine, text));
-                        text = "";
-                    } else if (nextChar == '='){
+                    } else {
                         text += nextChar;
                         posInLine += 1;
                         tokens.add(new Token(Kind.getKind(text), pos, text.length(), line, posInLine, text));
                         pos += 1;
-                        text = "";
                     }
-                    posInLine += 1;
+                   text = "";
+                   posInLine += 1;
+                } else if (curChar == '<') {
+                    text += curChar;
+                   if (nextChar == '='){
+                        text += nextChar;
+                        posInLine += 1;
+                        tokens.add(new Token(Kind.getKind(text), pos, text.length(), line, posInLine, text));
+                        pos += 1;
+                    } else if (nextChar == '-'){
+                        text += nextChar;
+                        posInLine += 1;
+                        tokens.add(new Token(Kind.getKind(text), pos, text.length(), line, posInLine, text));
+                        pos += 1;
+                    } else {
+                        tokens.add(new Token(Kind.getKind(text), pos, text.length(), line, posInLine, text));
+                    }
+                   text = "";
+                   posInLine += 1;
                 }  else if ((curChar == '/') || (curChar == '*')) {
                     // check for comments
-                    if ((curChar == '/') && (nextChar == '*')) {
+                    if (nextChar == '*') {
                         text = "/*";
                         posInLine += 1;
                         tokens.add(new Token(Kind.COMMENT, pos, text.length(), line, posInLine, text));
                         inComment = true;
                         pos += 1;
                         text = "";
-                    } else if ((curChar == '*') && (nextChar == '/') && inComment) {
+                    } else if ((nextChar == '/') && inComment) {
                         text = "*/";
                         posInLine += 1;
                         tokens.add(new Token(Kind.UNCOMMENT, pos, text.length(), line, posInLine, text));

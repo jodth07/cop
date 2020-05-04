@@ -30,13 +30,13 @@ public class ScannerTest {
         scanner.scan();
     }
 
-//    @AfterEach
-//    public void testFinalEOF() throws IllegalCharException, IllegalNumberException {
-//        //check that the scanner has inserted an EOF token at the end
-//        token = scanner.nextToken();
-//        assertEquals(Scanner.Kind.EOF, token.kind);
-//        assertEquals(token.text, "eof");
-//    }
+    @AfterEach
+    public void testFinalEOF() throws IllegalCharException, IllegalNumberException {
+        //check that the scanner has inserted an EOF token at the end
+        token = scanner.nextToken();
+        assertEquals(Scanner.Kind.EOF, token.kind);
+        assertEquals(token.text, "eof");
+    }
 
     @Test
     public void testInComment() throws IllegalCharException, IllegalNumberException {
@@ -100,9 +100,10 @@ public class ScannerTest {
         assertEquals(text, token2.getText());
     }
 
+    //    separator ::= 	;  | ,  |  (  |  )  | { | }
     @Test
-    public void testSemiCommaParensBracesOrAndConcat() throws IllegalCharException, IllegalNumberException {
-        input = "; , ( ) { } | & ";
+    public void testSeparators() throws IllegalCharException, IllegalNumberException {
+        input = "; , ( ) { }";
         scanner = new Scanner(input);
         scanner.scan();
 
@@ -150,19 +151,19 @@ public class ScannerTest {
         assertEquals(text.length(), token5.length);
         assertEquals(text, token5.getText());
 
-        Scanner.Token token6 = scanner.nextToken();
-        assertEquals(OR, token6.kind);
-        assertEquals(12, token6.pos);
-        text = OR.getText();
-        assertEquals(text.length(), token6.length);
-        assertEquals(text, token6.getText());
-
-        Scanner.Token token7 = scanner.nextToken();
-        assertEquals(AND, token7.kind);
-        assertEquals(14, token7.pos);
-        text = AND.getText();
-        assertEquals(text.length(), token7.length);
-        assertEquals(text, token7.getText());
+//        Scanner.Token token6 = scanner.nextToken();
+//        assertEquals(OR, token6.kind);
+//        assertEquals(12, token6.pos);
+//        text = OR.getText();
+//        assertEquals(text.length(), token6.length);
+//        assertEquals(text, token6.getText());
+//
+//        Scanner.Token token7 = scanner.nextToken();
+//        assertEquals(AND, token7.kind);
+//        assertEquals(14, token7.pos);
+//        text = AND.getText();
+//        assertEquals(text.length(), token7.length);
+//        assertEquals(text, token7.getText());
 
     }
 
@@ -285,8 +286,9 @@ public class ScannerTest {
         assertEquals(3, token.posInLine);
     }
 
+    //    boolean_literal ::= true | false
     @Test
-    public void testKeywordsBoolean() throws IllegalCharException, IllegalNumberException {
+    public void testBooleanLiterals() throws IllegalCharException, IllegalNumberException {
         input = "true false boolean";
 
         //create and initialize the scanner
@@ -317,13 +319,11 @@ public class ScannerTest {
         assertEquals(KW_BOOLEAN, token.kind);
         assertEquals(11, token.posInLine);
 
-
-
     }
 
     //frame_op_keyword ∷= xloc | yloc | hide | show | move
     @Test
-    public void testKeywordsXlocYlocHidShowMoveOrs() throws IllegalCharException, IllegalNumberException {
+    public void testFrameOPKeywords() throws IllegalCharException, IllegalNumberException {
         input = "xloc | yloc | hide | show | move";
 
         //create and initialize the scanner
@@ -374,7 +374,7 @@ public class ScannerTest {
 
     //image_op_keyword ∷= width | height
     @Test
-    public void testOPWidthHeight() throws IllegalCharException, IllegalNumberException {
+    public void testImageOPKeywords() throws IllegalCharException, IllegalNumberException {
         input = "width | \nheight";
 
         //create and initialize the scanner
@@ -402,7 +402,7 @@ public class ScannerTest {
 
     //filter_op_keyword ∷= gray | convolve | blur | scale
     @Test
-    public void testOPGrayConvolveBlurScale() throws IllegalCharException, IllegalNumberException {
+    public void testFilterOPKeywords() throws IllegalCharException, IllegalNumberException {
         input = "gray | \nconvolve | blur | scale";
 
         //create and initialize the scanner
@@ -444,10 +444,9 @@ public class ScannerTest {
         assertEquals(18, token.posInLine);
     }
 
-
     //	keyword ::= integer | boolean | image | url | file | frame | while | if | sleep | screenheight | screenwidth
     @Test
-    public void testOPIntegerBooleanImageUrlFileFrameWhileIfSleepScreenHeightScreenWidth() throws IllegalCharException, IllegalNumberException {
+    public void testRegularKeywords() throws IllegalCharException, IllegalNumberException {
         input = "integer | boolean | image | url | file | frame | while | if | sleep | screenheight | screenwidth";
 
         //create and initialize the scanner
@@ -538,9 +537,9 @@ public class ScannerTest {
         assertEquals(KW_SCREENWIDTH, token.kind);
     }
 
-    //    NOT("!"), NOTEQUAL("!="), LT("<"), GT(">"),
+    //  operator ::=   	|  | &  |  ==  | !=  | < |  > | <= | >= | +  |  -  |  *   |  /   |  % | !  | -> |  |-> | <-
     @Test
-    public void testNotEqualNot() throws IllegalCharException, IllegalNumberException {
+    public void testOperatorsPart1() throws IllegalCharException, IllegalNumberException {
         input = "! != ";
 
         scanner = new Scanner(input);
@@ -564,10 +563,10 @@ public class ScannerTest {
     }
 
 
-    //   LT("<"), GT(">"),
+    //  operator ::=  < |  > | <= | >= | +
     @Test
-    public void testLessthanGreaterthan() throws IllegalCharException, IllegalNumberException {
-        input = "< > <= >= ";
+    public void testOperatorsPart2() throws IllegalCharException, IllegalNumberException {
+        input = "< > <= >= + ";
         scanner = new Scanner(input);
         scanner.scan();
 
@@ -599,9 +598,80 @@ public class ScannerTest {
         assertEquals(text.length(), token.length);
         assertEquals(GE, token.kind);
         assertEquals(7, token.posInLine);
+
+        token = scanner.nextToken();
+        text = PLUS.getText();
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(PLUS, token.kind);
+        assertEquals(10, token.posInLine);
     }
 
+    //  operator ::=   -  |  *   |  /   |  % | !  | -> |  |-> | <-
+    @Test
+    public void testOperatorsPart3() throws IllegalCharException, IllegalNumberException {
+        input = "- * /  % \n! -> |-> <-";
+        scanner = new Scanner(input);
+        scanner.scan();
 
+        token = scanner.nextToken();
+        text = MINUS.getText();
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(MINUS, token.kind);
+        assertEquals(0, token.posInLine);
+        assertEquals(0, token.line);
+
+        token = scanner.nextToken();
+        text = TIMES.getText();
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(TIMES, token.kind);
+        assertEquals(2, token.posInLine);
+
+        token = scanner.nextToken();
+        text = DIV.getText();
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(DIV, token.kind);
+        assertEquals(4, token.posInLine);
+
+        token = scanner.nextToken();
+        text = MOD.getText();
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(MOD, token.kind);
+        assertEquals(7, token.posInLine);
+
+        token = scanner.nextToken();
+        text = NOT.getText();
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(NOT, token.kind);
+        assertEquals(0, token.posInLine);
+        assertEquals(1, token.line);
+
+        token = scanner.nextToken();
+        text = ARROW.getText();
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(ARROW, token.kind);
+        assertEquals(2, token.posInLine);
+
+        token = scanner.nextToken();
+        text = BARARROW.getText();
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(BARARROW, token.kind);
+        assertEquals(5, token.posInLine);
+
+        token = scanner.nextToken();
+        text = ASSIGN.getText();
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(ASSIGN, token.kind);
+        assertEquals(9, token.posInLine);
+    }
 
     //	@Test
 //	public void testIntOverflowError() throws IllegalCharException, IllegalNumberException{
