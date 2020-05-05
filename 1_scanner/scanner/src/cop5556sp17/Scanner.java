@@ -14,28 +14,29 @@ public class Scanner {
     int tokenNum;
 
 
-    public static enum Kind {
-        IDENT(""), // TODO TO BE IMPLEMENTED
-        INT_LIT(""),
+    public enum Kind {
+        AND("&"),
+        ARROW("->"),
 
-        KW_FILE("file"), KW_FRAME("frame"), KW_HIDE("hide"), KW_IMAGE("image"), KW_MOVE("move"),
-        KW_SCALE("scale"), KW_SCREENHEIGHT("screenheight"), KW_SCREENWIDTH("screenwidth"),
-        KW_SHOW("show"), OP_SLEEP("sleep"), KW_URL("url"), KW_XLOC("xloc"), KW_YLOC("yloc"),
+        ASSIGN("<-"), BARARROW("|->"), COMMA(","), COMMENT("*/"), DIV("/"),
+        EOF("eof"), EQUAL("=="), GE(">="),
+        GT(">"), IDENT(""),
+        INT_LIT(""), KW_BOOLEAN("boolean"), KW_FALSE("false"),
 
-        KW_BOOLEAN("boolean"), KW_INTEGER("integer"), KW_TRUE("true"), KW_FALSE("false"),
-        KW_IF("if"), KW_WHILE("while"),
+        KW_FILE("file"), KW_FRAME("frame"), KW_HIDE("hide"), KW_IF("if"),
+        KW_IMAGE("image"), KW_INTEGER("integer"),
 
-        SEMI(";"), COMMA(","), LPAREN("("), RPAREN(")"), LBRACE("{"),
-        RBRACE("}"),
-        AND("&"), TIMES("*"), DIV("/"), MOD("%"), PLUS("+"),
+        KW_MOVE("move"), KW_SCALE("scale"), KW_SCREENHEIGHT("screenheight"), KW_SCREENWIDTH("screenwidth"), KW_SHOW("show"),
+        KW_TRUE("true"),
+        KW_URL("url"), KW_WHILE("while"), KW_XLOC("xloc"), KW_YLOC("yloc"), LBRACE("{"),
 
-        NOT("!"), NOTEQUAL("!="), LT("<"), GT(">"),
+        LE("<="), LPAREN("("), LT("<"), MINUS("-"),
 
-        OR("|"), MINUS("-"), ARROW("->"), BARARROW("|->"), ASSIGN("<-"),
-        EQUAL("=="),   LE("<="), GE(">="),
+        MOD("%"), NOT("!"), NOTEQUAL("!="), OP_BLUR("blur"), OP_CONVOLVE("convolve"),
+        OP_GRAY("gray"), OP_HEIGHT("height"), OP_SLEEP("sleep"),
 
-        OP_BLUR("blur"), OP_GRAY("gray"), OP_CONVOLVE("convolve"), OP_WIDTH("width"),
-        OP_HEIGHT("height"), EOF("eof"), COMMENT("*/"), UNCOMMENT("/*");
+        OP_WIDTH("width"), OR("|"), PLUS("+"), RBRACE("}"),
+        RPAREN(")"), SEMI(";"), TIMES("*"), UNCOMMENT("/*");
 
         Kind(String text) {
             this.text = text;
@@ -47,63 +48,111 @@ public class Scanner {
             return text;
         }
 
-        public static Kind getKind(String text){
-            switch (text){
-                case "false" : return KW_FALSE;
-                case "true" : return KW_TRUE;
+        public static Kind getKind(String text) {
+            switch (text) {
+                case "false":
+                    return KW_FALSE;
+                case "true":
+                    return KW_TRUE;
                 // frame_op_keyword ∷= xloc | yloc | hide | show | move
-                case "xloc" : return KW_XLOC;
-                case "yloc" : return KW_YLOC;
-                case "hide" : return KW_HIDE;
-                case "show" : return KW_SHOW;
-                case "move" : return KW_MOVE;
+                case "xloc":
+                    return KW_XLOC;
+                case "yloc":
+                    return KW_YLOC;
+                case "hide":
+                    return KW_HIDE;
+                case "show":
+                    return KW_SHOW;
+                case "move":
+                    return KW_MOVE;
                 // image_op_keyword ∷= width | height
-                case "width" : return OP_WIDTH;
-                case "height" : return OP_HEIGHT;
+                case "width":
+                    return OP_WIDTH;
+                case "height":
+                    return OP_HEIGHT;
                 // filter_op_keyword ∷= gray | convolve | blur | scale
-                case "gray" : return OP_GRAY;
-                case "convolve" : return OP_CONVOLVE;
-                case "blur" : return OP_BLUR;
-                case "scale" : return KW_SCALE;
+                case "gray":
+                    return OP_GRAY;
+                case "convolve":
+                    return OP_CONVOLVE;
+                case "blur":
+                    return OP_BLUR;
+                case "scale":
+                    return KW_SCALE;
                 // keyword ::= integer | boolean | image | url | file | frame | while | if | sleep | screenheight | screenwidth
-                case "integer" : return KW_INTEGER;
-                case "boolean" : return KW_BOOLEAN;
-                case "image" : return KW_IMAGE;
-                case "url" : return KW_URL;
-                case "file" : return KW_FILE;
-                case "frame" : return KW_FRAME;
-                case "while" : return KW_WHILE;
-                case "if" : return KW_IF;
-                case "sleep" : return OP_SLEEP;
-                case "screenheight" : return KW_SCREENHEIGHT;
-                case "screenwidth" : return KW_SCREENWIDTH;
+                case "integer":
+                    return KW_INTEGER;
+                case "boolean":
+                    return KW_BOOLEAN;
+                case "image":
+                    return KW_IMAGE;
+                case "url":
+                    return KW_URL;
+                case "file":
+                    return KW_FILE;
+                case "frame":
+                    return KW_FRAME;
+                case "while":
+                    return KW_WHILE;
+                case "if":
+                    return KW_IF;
+                case "sleep":
+                    return OP_SLEEP;
+                case "screenheight":
+                    return KW_SCREENHEIGHT;
+                case "screenwidth":
+                    return KW_SCREENWIDTH;
                 // separator ::=  ;  | ,  |  (  |  )  | { | }
-                case ";" : return SEMI;
-                case "," : return COMMA;
-                case "(" : return LPAREN;
-                case ")" : return RPAREN;
-                case "{" : return LBRACE;
-                case "}" : return RBRACE;
+                case ";":
+                    return SEMI;
+                case ",":
+                    return COMMA;
+                case "(":
+                    return LPAREN;
+                case ")":
+                    return RPAREN;
+                case "{":
+                    return LBRACE;
+                case "}":
+                    return RBRACE;
                 // operator ::=	|  | &  |  ==  | !=  | < |  > | <= | >= | +  |  -  |  *   |  /   |  % | !  | -> |  |-> | <-
-                case "|" : return OR;
-                case "&" : return AND;
-                case "==" : return EQUAL;
-                case "!=" : return NOTEQUAL;
-                case "<" : return LT;
-                case ">" : return GT;
-                case "<=" : return LE;
-                case ">=" : return GE;
-                case "+" : return PLUS;
-                case "-" : return MINUS;
-                case "*" : return TIMES;
-                case "/" : return DIV;
-                case "%" : return MOD;
-                case "!" : return NOT;
-                case "->" : return ARROW;
-                case "|->" : return BARARROW;
-                case "<-" : return ASSIGN;
+                case "|":
+                    return OR;
+                case "&":
+                    return AND;
+                case "==":
+                    return EQUAL;
+                case "!=":
+                    return NOTEQUAL;
+                case "<":
+                    return LT;
+                case ">":
+                    return GT;
+                case "<=":
+                    return LE;
+                case ">=":
+                    return GE;
+                case "+":
+                    return PLUS;
+                case "-":
+                    return MINUS;
+                case "*":
+                    return TIMES;
+                case "/":
+                    return DIV;
+                case "%":
+                    return MOD;
+                case "!":
+                    return NOT;
+                case "->":
+                    return ARROW;
+                case "|->":
+                    return BARARROW;
+                case "<-":
+                    return ASSIGN;
 
-                default: return null;
+                default:
+                    return null;
             }
         }
 
@@ -156,6 +205,7 @@ public class Scanner {
         public final int line;  //position in input array
         public final int length;
         public final String text;
+        private final int intVal;
 
         //returns the text of this Token
         public String getText() {
@@ -167,7 +217,12 @@ public class Scanner {
             return this.linePos;
         }
 
+
         Token(Kind kind, int pos, int length, int line, int posInLine, String text) {
+            this (kind, pos, length, line, posInLine, text, 0);
+        }
+
+        Token(Kind kind, int pos, int length, int line, int posInLine, String text, int value) {
             this.kind = kind;
             this.pos = pos - (text.length() - 1);
             this.length = length;
@@ -175,7 +230,10 @@ public class Scanner {
             this.posInLine = posInLine - (text.length() - 1);
             this.text = text;
             this.linePos = new LinePos(line, posInLine);
+            this.intVal = value;
         }
+
+
 
         /**
          * Precondition:  kind = Kind.INT_LIT,  the text can be represented with a Java int.
@@ -185,8 +243,7 @@ public class Scanner {
          * @throws NumberFormatException
          */
         public int intVal() throws NumberFormatException{
-            //TODO IMPLEMENT THIS
-            return 0;
+            return this.intVal;
         }
     }
 
@@ -213,112 +270,98 @@ public class Scanner {
     public Scanner scan() throws IllegalCharException, IllegalNumberException {
         int charsLength = this.chars.length();
         char[] charsArray = this.chars.toCharArray();
-        char curChar, nextChar, prevChar;
+        char curChar, nextChar;
         int pos = 0;
         int posInLine = 0, line = 0;
-        String text = "";
+        StringBuilder text = new StringBuilder();
 
         for (pos = 0; pos < charsLength; ++pos) {
             curChar = charsArray[pos];
-
-            if (pos > 0) {
-                prevChar = charsArray[pos - 1];
-            }
 
             if ((curChar == '\n') || (curChar == '\r')) {
                 line += 1;
                 posInLine = 0;
             } else if (curChar == ' '){
                 if (text.length() > 0){
-                    tokens.add(new Token(Kind.getKind(text), pos, text.length(), line, posInLine, text));
-                    text = "";
+                    tokens.add(new Token(Kind.getKind(text.toString()), pos, text.length(), line, posInLine, text.toString()));
+                    text = new StringBuilder();
                 }
                 posInLine += 1;
             } else if ((curChar == ';') || (curChar == ',') || (curChar == '(') || (curChar == ')') || (curChar == '{')
                     || (curChar == '}') || (curChar == '&') || (curChar == '+') || (curChar == '%')) {
-                text += curChar;
-                tokens.add(new Token(Kind.getKind(text), pos, text.length(), line, posInLine, text));
-                text = "";
+                text.append(curChar);
+                tokens.add(new Token(Kind.getKind(text.toString()), pos, text.length(), line, posInLine, text.toString()));
+                text = new StringBuilder();
                 posInLine += 1;
 
             } else if (pos + 1 < charsLength){
                 nextChar = charsArray[pos + 1];
 
                 if (curChar == '-'){
-                    text += curChar;
+                    text.append(curChar);
                     if (nextChar != '>'){
-                        tokens.add(new Token(Kind.getKind(text), pos, text.length(), line, posInLine, text));
+                        tokens.add(new Token(Kind.getKind(text.toString()), pos, text.length(), line, posInLine, text.toString()));
                     } else {
-                        text += nextChar;
+                        text.append(nextChar);
                         posInLine += 1;
-                        tokens.add(new Token(Kind.getKind(text), pos, text.length(), line, posInLine, text));
+                        tokens.add(new Token(Kind.getKind(text.toString()), pos, text.length(), line, posInLine, text.toString()));
                         pos += 1;
                     }
-                    text = "";
+                    text = new StringBuilder();
                     posInLine += 1;
                 }
-                else if (Character.isLowerCase(curChar) && text.isEmpty()){
-                    text += curChar;
+                else if (Character.isLowerCase(curChar) && (text.length() == 0)){
+                    text.append(curChar);
                     while ((pos+1 <= charsLength-1) && (Character.isDigit(charsArray[pos+1]) || (Character.isLowerCase(charsArray[pos+1])))){
 //                        System.out.println(pos);
                         pos++;
                         posInLine++;
                         curChar = charsArray[pos];
-                        text += curChar;
+                        text.append(curChar);
                     }
-                    if (Kind.getKind(text) != null){
-                        tokens.add(new Token(Kind.getKind(text), pos, text.length(), line, posInLine, text));
+                    if (Kind.getKind(text.toString()) != null){
+                        tokens.add(new Token(Kind.getKind(text.toString()), pos, text.length(), line, posInLine, text.toString()));
                     } else {
-                        tokens.add(new Token(Kind.IDENT, pos, text.length(), line, posInLine, text));
+                        tokens.add(new Token(Kind.IDENT, pos, text.length(), line, posInLine, text.toString()));
                     }
-                    text = "";
+                    text = new StringBuilder();
                     posInLine++;
                 }
-                else if ((Character.isLowerCase(curChar) && (nextChar == ' '))){
-                    text += curChar;
-                    tokens.add(new Token(Kind.getKind(text), pos, text.length(), line, posInLine, text));
-                    text = "";
-                    pos += 1;
-                    posInLine += 2;
-                } else if ((Character.isLowerCase(curChar) && Character.isLowerCase(nextChar))){
-                    text += curChar;
-                    posInLine += 1;
-                }
-                else if (isIdentStartOnly(curChar) && text.isEmpty()){
-                    text += curChar;
+                else if (isIdentStartOnly(curChar) && (text.length() == 0)){
+                    text.append(curChar);
                     while ((pos+1 <= charsLength-1) && (Character.isDigit(charsArray[pos+1]) || (Character.isLowerCase(charsArray[pos+1])))){
 //                        System.out.println(pos);
                         pos++;
                         posInLine++;
                         curChar = charsArray[pos];
-                        text += curChar;
+                        text.append(curChar);
                     }
-                    tokens.add(new Token(Kind.IDENT, pos, text.length(), line, posInLine, text));
-                    text = "";
+                    tokens.add(new Token(Kind.IDENT, pos, text.length(), line, posInLine, text.toString()));
+                    text = new StringBuilder();
                     posInLine++;
                 }
 
                 else if (Character.isDigit(curChar)){
-                    text += curChar;
+                    text.append(curChar);
                     while ((pos+1 <= charsLength-1) && (Character.isDigit(charsArray[pos+1]))){
                         posInLine++;
                         curChar = charsArray[pos];
-                        text += curChar;
+                        text.append(curChar);
                         pos++;
                     }
                     try {
-                        Integer.parseInt(text);
-                        tokens.add(new Token(Kind.INT_LIT, pos, text.length(), line, posInLine, text));
-                        text = "";
+                        int value = Integer.parseInt(text.toString());
+                        tokens.add(new Token(Kind.INT_LIT, pos, text.length(), line, posInLine, text.toString(), value));
+                        text = new StringBuilder();
                     } catch (NumberFormatException e){
                         throw new IllegalNumberException("number provided is larger than we can work with");
                     }
                     posInLine++;
                 }
                 else if (curChar == '|'){
-                    text += curChar;
+                    text.append(curChar);
                     if (nextChar != '-'){
-                        tokens.add(new Token(Kind.getKind(text), pos, text.length(), line, posInLine, text));
+                        tokens.add(new Token(Kind.getKind(text.toString()), pos, text.length(), line, posInLine, text.toString()));
                     } else {
                         if (pos + 2 >= charsLength){
                             System.out.println(pos);
@@ -326,75 +369,74 @@ public class Scanner {
                             throw new IllegalCharException("This is an out of index exception");
                         }
 
-                        text += nextChar;
-                        text += charsArray[pos + 2];
+                        text.append(nextChar);
+                        text.append(charsArray[pos + 2]);
                         posInLine += 2;
-                        tokens.add(new Token(Kind.getKind(text), pos, text.length(), line, posInLine, text));
+                        tokens.add(new Token(Kind.getKind(text.toString()), pos, text.length(), line, posInLine, text.toString()));
                         pos += 2;
                     }
-                    text = "";
+                    text = new StringBuilder();
                     posInLine += 1;
                 }
                 else if ((curChar == '>') || curChar == '!') {
-                    text += curChar;
+                    text.append(curChar);
                     if (nextChar != '='){
-                        tokens.add(new Token(Kind.getKind(text), pos, text.length(), line, posInLine, text));
+                        tokens.add(new Token(Kind.getKind(text.toString()), pos, text.length(), line, posInLine, text.toString()));
                     } else {
-                        text += nextChar;
+                        text.append(nextChar);
                         posInLine += 1;
-                        tokens.add(new Token(Kind.getKind(text), pos, text.length(), line, posInLine, text));
+                        tokens.add(new Token(Kind.getKind(text.toString()), pos, text.length(), line, posInLine, text.toString()));
                         pos += 1;
                     }
-                   text = "";
+                   text = new StringBuilder();
                    posInLine += 1;
                 } else if (curChar == '<') {
-                    text += curChar;
+                    text.append(curChar);
                    if (nextChar == '='){
-                        text += nextChar;
+                        text.append(nextChar);
                         posInLine += 1;
-                        tokens.add(new Token(Kind.getKind(text), pos, text.length(), line, posInLine, text));
+                        tokens.add(new Token(Kind.getKind(text.toString()), pos, text.length(), line, posInLine, text.toString()));
                         pos += 1;
                     } else if (nextChar == '-'){
-                        text += nextChar;
+                        text.append(nextChar);
                         posInLine += 1;
-                        tokens.add(new Token(Kind.getKind(text), pos, text.length(), line, posInLine, text));
+                        tokens.add(new Token(Kind.getKind(text.toString()), pos, text.length(), line, posInLine, text.toString()));
                         pos += 1;
                     } else {
-                        tokens.add(new Token(Kind.getKind(text), pos, text.length(), line, posInLine, text));
+                        tokens.add(new Token(Kind.getKind(text.toString()), pos, text.length(), line, posInLine, text.toString()));
                     }
-                   text = "";
+                   text = new StringBuilder();
                    posInLine += 1;
                 }  else if ((curChar == '/') || (curChar == '*')) {
                     // check for comments
                     if (nextChar == '*') {
-                        text = "/*";
+                        text = new StringBuilder("/*");
                         posInLine += 1;
-                        tokens.add(new Token(Kind.COMMENT, pos, text.length(), line, posInLine, text));
+                        tokens.add(new Token(Kind.COMMENT, pos, text.length(), line, posInLine, text.toString()));
                         inComment = true;
                         pos += 1;
-                        text = "";
+                        text = new StringBuilder();
                     } else if ((nextChar == '/') && inComment) {
-                        text = "*/";
+                        text = new StringBuilder("*/");
                         posInLine += 1;
-                        tokens.add(new Token(Kind.UNCOMMENT, pos, text.length(), line, posInLine, text));
+                        tokens.add(new Token(Kind.UNCOMMENT, pos, text.length(), line, posInLine, text.toString()));
                         inComment = false;
                         pos += 1;
-                        text = "";
+                        text = new StringBuilder();
                     } else {
-                        text += curChar;
-                        tokens.add(new Token(Kind.getKind(text), pos, text.length(), line, posInLine, text));
-                        text = "";
+                        text.append(curChar);
+                        tokens.add(new Token(Kind.getKind(text.toString()), pos, text.length(), line, posInLine, text.toString()));
+                        text = new StringBuilder();
                     }
                     posInLine += 1;
                 }
             } else if (Character.isLowerCase(curChar)){
-                text += curChar;
-                tokens.add(new Token(Kind.getKind(text), pos, text.length(), line, posInLine, text));
+                text.append(curChar);
+                tokens.add(new Token(Kind.getKind(text.toString()), pos, text.length(), line, posInLine, text.toString()));
                 posInLine += 1;
             }
         }
 
-        //TODO IMPLEMENT THIS!!!!
         if (inComment){
             throw new IllegalCharException("Unclosed Comments at line[" + line +"] column[" + posInLine + "]");
         }
