@@ -3,10 +3,10 @@
 ## Implement a scanner for the programming language with the following lexical structure
 
 ### Tokens extractions
-comment ::=   **`/*`**  NOT(\*/)\*  **`*/`** <br>
-ident_start ::=  **`A .. Z`** | **`a .. z`** | **`$`** | **`_`** <br>
-ident_part ::= **`ident_start`** | **`( 0 .. 9 )`** <br>
-int_literal ::= **`0`** | **`(1..9)`** **`(0..9)*`** <br>
+##### comment ::=   **`/*`**  NOT(\*/)\*  **`*/`** <br>
+##### ident_start ::=  **`A .. Z`** | **`a .. z`** | **`$`** | **`_`** <br>
+##### ident_part ::= **`ident_start`** | **`( 0 .. 9 )`** <br>
+##### int_literal ::= **`0`** | **`(1..9)`** **`(0..9)*`** <br>
 keyword ::= **`integer`** | **`boolean`** | **`image`** | **`url`** | **`file`** | **`frame`** | **`while`** | **`if`** | **`sleep`** | **`screenheight`** | **`screenwidth`** <br> 
 filter_op_keyword ∷= **`gray`** | **`convolve`** | **`blur`** | **`scale`** <br>
 image_op_keyword ∷= **`width`** | **`height`** <br>
