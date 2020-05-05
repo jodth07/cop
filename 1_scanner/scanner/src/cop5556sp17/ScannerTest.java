@@ -708,6 +708,7 @@ public class ScannerTest {
         assertEquals(INT_LIT, token.kind);
         assertEquals(0, token.posInLine);
         assertEquals(0, token.line);
+        assertEquals(9, token.intVal());
 
         token = scanner.nextToken();
         text = "999";
@@ -716,6 +717,7 @@ public class ScannerTest {
         assertEquals(INT_LIT, token.kind);
         assertEquals(2, token.posInLine);
         assertEquals(0, token.line);
+        assertEquals(999, token.intVal());
 
         token = scanner.nextToken();
         text = AND.text;
@@ -723,9 +725,18 @@ public class ScannerTest {
         assertEquals(text.length(), token.length);
         assertEquals(AND, token.kind);
         assertEquals(6, token.posInLine);
+        assertEquals(0, token.intVal());
         assertEquals(0, token.line);
 
         token = scanner.nextToken();
+        text = KW_YLOC.text;
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(KW_YLOC, token.kind);
+        assertEquals(8, token.posInLine);
+        assertEquals(0, token.line);
+
+        token = scanner.prevToken();
         text = KW_YLOC.text;
         assertEquals(text, token.getText());
         assertEquals(text.length(), token.length);
@@ -800,7 +811,14 @@ public class ScannerTest {
         assertEquals(0, token.posInLine);
         assertEquals(0, token.line);
 
-
+        token = scanner.peek();
+//        token = scanner.nextToken();
+        text = "if009";
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(IDENT, token.kind);
+        assertEquals(10, token.posInLine);
+        assertEquals(0, token.line);
         token = scanner.nextToken();
         text = "if";
         assertEquals(text, token.getText());
@@ -816,6 +834,7 @@ public class ScannerTest {
         assertEquals(IDENT, token.kind);
         assertEquals(10, token.posInLine);
         assertEquals(0, token.line);
-
     }
+
+
 }
