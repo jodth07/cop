@@ -7,8 +7,16 @@ public class Scanner {
      * Kind enum
      */
 
+    public static boolean inIdent;
+    public boolean inComment;
+    final ArrayList<Token> tokens;
+    final String chars;
+    int tokenNum;
+
+
     public static enum Kind {
-        IDENT(""), INT_LIT(""),
+        IDENT(""), // TODO TO BE IMPLEMENTED
+        INT_LIT(""),
 
         KW_FILE("file"), KW_FRAME("frame"), KW_HIDE("hide"), KW_IMAGE("image"), KW_MOVE("move"),
         KW_SCALE("scale"), KW_SCREENHEIGHT("screenheight"), KW_SCREENWIDTH("screenwidth"),
@@ -85,7 +93,7 @@ public class Scanner {
                 case ">" : return GT;
                 case "<=" : return LE;
                 case ">=" : return GE;
-                case "+" : return PLUS; // TODO TO BE IMPLEMENTED
+                case "+" : return PLUS;
                 case "-" : return MINUS;
                 case "*" : return TIMES;
                 case "/" : return DIV;
@@ -98,6 +106,7 @@ public class Scanner {
                 default: return null;
             }
         }
+
     }
 
     /**
@@ -186,7 +195,13 @@ public class Scanner {
         tokens = new ArrayList<Token>();
     }
 
-    public boolean inComment = false;
+    public static Boolean isIdentStartOnly(char c){
+        if (Character.isUpperCase(c) || (c == '$') || (c == '_')){
+            inIdent = true;
+            return true;
+        }
+        return false;
+    }
 
     /**
      * Initializes Scanner object by traversing chars and adding tokens to tokens list.
@@ -241,10 +256,24 @@ public class Scanner {
                     }
                     text = "";
                     posInLine += 1;
-                } else if (Character.isDigit(curChar)){
+                }
+                else if (isIdentStartOnly(curChar) && text.isEmpty()){
+                    text += curChar;
+                    while ((pos+1 <= charsLength-1) && (Character.isDigit(charsArray[pos+1]) || (Character.isLowerCase(charsArray[pos+1])))){
+//                        System.out.println(pos);
+                        pos++;
+                        posInLine++;
+                        curChar = charsArray[pos];
+                        text += curChar;
+                    }
+                    tokens.add(new Token(Kind.IDENT, pos, text.length(), line, posInLine, text));
+                    text = "";
+                    posInLine++;
+                }
+
+                else if (Character.isDigit(curChar)){
                     text += curChar;
                     while ((pos+1 <= charsLength-1) && (Character.isDigit(charsArray[pos+1]))){
-                        System.out.println(pos);
                         posInLine++;
                         curChar = charsArray[pos];
                         text += curChar;
@@ -330,17 +359,17 @@ public class Scanner {
                         text = "";
                     }
                     posInLine += 1;
-                } else if ((Character.isAlphabetic(curChar) && (nextChar == ' '))){
+                } else if ((Character.isLowerCase(curChar) && (nextChar == ' '))){
                     text += curChar;
                     tokens.add(new Token(Kind.getKind(text), pos, text.length(), line, posInLine, text));
                     text = "";
                     pos += 1;
                     posInLine += 2;
-                } else if ((Character.isAlphabetic(curChar) && Character.isAlphabetic(nextChar))){
+                } else if ((Character.isLowerCase(curChar) && Character.isLowerCase(nextChar))){
                     text += curChar;
                     posInLine += 1;
                 }
-            } else if (Character.isAlphabetic(curChar)){
+            } else if (Character.isLowerCase(curChar)){
                 text += curChar;
                 tokens.add(new Token(Kind.getKind(text), pos, text.length(), line, posInLine, text));
                 posInLine += 1;
@@ -355,9 +384,6 @@ public class Scanner {
         return this;
     }
 
-    final ArrayList<Token> tokens;
-    final String chars;
-    int tokenNum;
 
     /*
      * Return the next token in the token list and update the state so that

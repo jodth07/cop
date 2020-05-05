@@ -1,14 +1,13 @@
 package cop5556sp17;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import static cop5556sp17.Scanner.Kind.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+import static cop5556sp17.Scanner.isIdentStartOnly;
 import cop5556sp17.Scanner.IllegalCharException;
 import cop5556sp17.Scanner.IllegalNumberException;
 
@@ -733,5 +732,57 @@ public class ScannerTest {
         assertEquals(KW_YLOC, token.kind);
         assertEquals(8, token.posInLine);
         assertEquals(0, token.line);
+    }
+
+    @Test
+    public void testIdentStart() throws IllegalCharException, IllegalNumberException {
+        assertTrue(isIdentStartOnly('F'));
+        assertTrue(isIdentStartOnly('$'));
+        assertTrue(isIdentStartOnly('_'));
+
+        assertFalse(isIdentStartOnly('h'));
+        assertFalse(isIdentStartOnly('-'));
+        assertFalse(isIdentStartOnly('+'));
+        assertFalse(isIdentStartOnly('='));
+        assertFalse(isIdentStartOnly('8'));
+
+        input = "";
+        scanner = new Scanner(input);
+        scanner.scan();
+    }
+
+    @Test
+    public void testIdent() throws IllegalCharException, IllegalNumberException {
+
+        input = "_var909 $var001 Var002";
+        scanner = new Scanner(input);
+        scanner.scan();
+
+        token = scanner.nextToken();
+        text = "_var909";
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(IDENT, token.kind);
+        assertEquals(0, token.posInLine);
+        assertEquals(0, token.line);
+
+
+        token = scanner.nextToken();
+        text = "$var001";
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(IDENT, token.kind);
+        assertEquals(8, token.posInLine);
+        assertEquals(0, token.line);
+
+
+        token = scanner.nextToken();
+        text = "Var002";
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(IDENT, token.kind);
+        assertEquals(16, token.posInLine);
+        assertEquals(0, token.line);
+
     }
 }
