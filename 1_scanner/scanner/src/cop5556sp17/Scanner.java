@@ -260,6 +260,14 @@ public class Scanner {
         return false;
     }
 
+    public static Boolean isIdentPart(char c){
+        if (Character.isLetterOrDigit(c) || (c == '$') || (c == '_')){
+            inIdent = true;
+            return true;
+        }
+        return false;
+    }
+
     /**
      * Initializes Scanner object by traversing chars and adding tokens to tokens list.
      *
@@ -312,8 +320,7 @@ public class Scanner {
                 }
                 else if (Character.isLowerCase(curChar) && (text.length() == 0)){
                     text.append(curChar);
-                    while ((pos+1 <= charsLength-1) && (Character.isDigit(charsArray[pos+1]) || (Character.isLowerCase(charsArray[pos+1])))){
-//                        System.out.println(pos);
+                    while ((pos+1 <= charsLength-1) && isIdentPart(charsArray[pos+1])){
                         pos++;
                         posInLine++;
                         curChar = charsArray[pos];
@@ -329,8 +336,7 @@ public class Scanner {
                 }
                 else if (isIdentStartOnly(curChar) && (text.length() == 0)){
                     text.append(curChar);
-                    while ((pos+1 <= charsLength-1) && (Character.isDigit(charsArray[pos+1]) || (Character.isLowerCase(charsArray[pos+1])))){
-//                        System.out.println(pos);
+                    while ((pos+1 <= charsLength-1) && (Character.isDigit(charsArray[pos+1]) || isIdentStartOnly(charsArray[pos+1]) || (Character.isLowerCase(charsArray[pos+1])))){
                         pos++;
                         posInLine++;
                         curChar = charsArray[pos];
