@@ -765,7 +765,7 @@ public class ScannerTest {
     @Test
     public void testIdent() throws IllegalCharException, IllegalNumberException {
 
-        input = "_var909 $var001 Var002";
+        input = "_var909 $var001 Var002 VAR002";
         scanner = new Scanner(input);
         scanner.scan();
 
@@ -794,8 +794,44 @@ public class ScannerTest {
         assertEquals(IDENT, token.kind);
         assertEquals(16, token.posInLine);
         assertEquals(0, token.line);
-
     }
+
+    @Test
+    public void testIdentCapandLower() throws IllegalCharException, IllegalNumberException {
+
+        input = "VAR002 vAR002 if iF0_$2";
+        scanner = new Scanner(input);
+        scanner.scan();
+
+        token = scanner.nextToken();
+        text = "VAR002";
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(IDENT, token.kind);
+        assertEquals(0, token.posInLine);
+
+        token = scanner.nextToken();
+        text = "vAR002";
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(IDENT, token.kind);
+        assertEquals(7, token.posInLine);
+
+        token = scanner.nextToken();
+        text = "if";
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(KW_IF, token.kind);
+        assertEquals(14, token.posInLine);
+
+        token = scanner.nextToken();
+        text = "iF0_$2";
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(IDENT, token.kind);
+        assertEquals(17, token.posInLine);
+    }
+
     @Test
     public void testIdentToken() throws IllegalCharException, IllegalNumberException {
 
@@ -812,7 +848,6 @@ public class ScannerTest {
         assertEquals(0, token.line);
 
         token = scanner.peek();
-//        token = scanner.nextToken();
         text = "if009";
         assertEquals(text, token.getText());
         assertEquals(text.length(), token.length);
@@ -835,6 +870,4 @@ public class ScannerTest {
         assertEquals(10, token.posInLine);
         assertEquals(0, token.line);
     }
-
-
 }
