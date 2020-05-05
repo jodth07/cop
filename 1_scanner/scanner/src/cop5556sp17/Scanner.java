@@ -257,6 +257,33 @@ public class Scanner {
                     text = "";
                     posInLine += 1;
                 }
+                else if (Character.isLowerCase(curChar) && text.isEmpty()){
+                    text += curChar;
+                    while ((pos+1 <= charsLength-1) && (Character.isDigit(charsArray[pos+1]) || (Character.isLowerCase(charsArray[pos+1])))){
+//                        System.out.println(pos);
+                        pos++;
+                        posInLine++;
+                        curChar = charsArray[pos];
+                        text += curChar;
+                    }
+                    if (Kind.getKind(text) != null){
+                        tokens.add(new Token(Kind.getKind(text), pos, text.length(), line, posInLine, text));
+                    } else {
+                        tokens.add(new Token(Kind.IDENT, pos, text.length(), line, posInLine, text));
+                    }
+                    text = "";
+                    posInLine++;
+                }
+                else if ((Character.isLowerCase(curChar) && (nextChar == ' '))){
+                    text += curChar;
+                    tokens.add(new Token(Kind.getKind(text), pos, text.length(), line, posInLine, text));
+                    text = "";
+                    pos += 1;
+                    posInLine += 2;
+                } else if ((Character.isLowerCase(curChar) && Character.isLowerCase(nextChar))){
+                    text += curChar;
+                    posInLine += 1;
+                }
                 else if (isIdentStartOnly(curChar) && text.isEmpty()){
                     text += curChar;
                     while ((pos+1 <= charsLength-1) && (Character.isDigit(charsArray[pos+1]) || (Character.isLowerCase(charsArray[pos+1])))){
@@ -358,15 +385,6 @@ public class Scanner {
                         tokens.add(new Token(Kind.getKind(text), pos, text.length(), line, posInLine, text));
                         text = "";
                     }
-                    posInLine += 1;
-                } else if ((Character.isLowerCase(curChar) && (nextChar == ' '))){
-                    text += curChar;
-                    tokens.add(new Token(Kind.getKind(text), pos, text.length(), line, posInLine, text));
-                    text = "";
-                    pos += 1;
-                    posInLine += 2;
-                } else if ((Character.isLowerCase(curChar) && Character.isLowerCase(nextChar))){
-                    text += curChar;
                     posInLine += 1;
                 }
             } else if (Character.isLowerCase(curChar)){

@@ -785,4 +785,37 @@ public class ScannerTest {
         assertEquals(0, token.line);
 
     }
+    @Test
+    public void testIdentToken() throws IllegalCharException, IllegalNumberException {
+
+        input = "var909 if if009";
+        scanner = new Scanner(input);
+        scanner.scan();
+
+        token = scanner.nextToken();
+        text = "var909";
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(IDENT, token.kind);
+        assertEquals(0, token.posInLine);
+        assertEquals(0, token.line);
+
+
+        token = scanner.nextToken();
+        text = "if";
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(KW_IF, token.kind);
+        assertEquals(7, token.posInLine);
+        assertEquals(0, token.line);
+
+        token = scanner.nextToken();
+        text = "if009";
+        assertEquals(text, token.getText());
+        assertEquals(text.length(), token.length);
+        assertEquals(IDENT, token.kind);
+        assertEquals(10, token.posInLine);
+        assertEquals(0, token.line);
+
+    }
 }
