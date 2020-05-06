@@ -11,7 +11,7 @@ public class Scanner {
     public boolean inComment;
     final ArrayList<Token> tokens;
     final String chars;
-    int tokenNum;
+    public static int tokenNum;
 
 
     public enum Kind {
@@ -244,6 +244,10 @@ public class Scanner {
          */
         public int intVal() throws NumberFormatException{
             return this.intVal;
+        }
+
+        public boolean isKind(Kind eof) {
+            return true;
         }
     }
 

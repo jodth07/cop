@@ -1,4 +1,4 @@
-# Scanner implementation instructions and requirements
+# Scanner implementation instructions and requirements using Backus-Naur Form Syntax
 
 ## Implement a scanner for the programming language with the following lexical structure
 

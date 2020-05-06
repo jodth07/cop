@@ -736,13 +736,6 @@ public class ScannerTest {
         assertEquals(8, token.posInLine);
         assertEquals(0, token.line);
 
-        token = scanner.prevToken();
-        text = KW_YLOC.text;
-        assertEquals(text, token.getText());
-        assertEquals(text.length(), token.length);
-        assertEquals(KW_YLOC, token.kind);
-        assertEquals(8, token.posInLine);
-        assertEquals(0, token.line);
     }
 
     @Test
@@ -794,6 +787,8 @@ public class ScannerTest {
         assertEquals(IDENT, token.kind);
         assertEquals(16, token.posInLine);
         assertEquals(0, token.line);
+
+        token = scanner.nextToken();
     }
 
     @Test
